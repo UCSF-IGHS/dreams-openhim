@@ -48,3 +48,7 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
