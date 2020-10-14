@@ -30,12 +30,13 @@ ALLOWED_HOSTS = []
 # OpenHIM mediator settings
 
 OPENHIM_OPTIONS = {
-    'username': 'admin@openhim.org',
+    'username': 'root@openhim.org',
     'password': 'iJd8#BcWVnp*',
-    'apiURL': 'https://him.globalhealthapp.net/',
+    'apiURL': 'https://him.globalhealthapp.net:8080',
+    'mediators_url': 'https://him-mediators.globalhealthapp.net',
     'verify_cert': False,
 
-    'force_config': False,
+    'force_config': True,
     'interval': 10,
 
     'register': True,
@@ -67,6 +68,7 @@ MEDIATOR_CONF = {
                 }
             ],
             'allow': ['admin'],
+            'methods': ['GET', 'POST'],
             'type': 'https',
         }
     ],

@@ -9,7 +9,8 @@ class EchoMediator:
         self.mediator_conf = copy(settings.MEDIATOR_CONF)
         self.registration = MediatorRegistration(
             options=self.options,
-            auth=Auth({'verify_cert': self.options['verify_cert'], 'apiURL': self.options['apiURL'], 'username': self.options['username']}),
+            auth=Auth({'verify_cert': self.options['verify_cert'], 'apiURL': self.options['apiURL'],
+                       'username': self.options['username'], 'password': self.options['password']}),
             conf=self.mediator_conf
         )
         self.registration.run()
