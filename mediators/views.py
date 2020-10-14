@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.http import HttpResponse
 
 from rest_framework import status
@@ -12,12 +9,14 @@ from .echo_mediator import EchoMediator
 def index(request):
     return HttpResponse("Hello, world. You're at the him-mediators-app index.")
 
+
 class EchoAPIView(APIView):
     def post(self, request):
         print('Initialize Mediator')
-        echo_mediator = EchoMediator()
-        print('Mediator Initialized successfully')
-        print(echo_mediator)
+        EchoMediator()
         return Response("Working", status.HTTP_200_OK)
 
-# ODK (push) -> OpenHIM -> Mediator -> OpenHIM -> DREAMS
+
+class DreamsODKAPIView(APIView):
+    def post(self, request):
+        return Response(self.request.data, status.HTTP_200_OK)

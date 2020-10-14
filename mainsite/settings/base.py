@@ -33,10 +33,10 @@ OPENHIM_OPTIONS = {
     'username': 'root@openhim.org',
     'password': 'iJd8#BcWVnp*',
     'apiURL': 'https://him.globalhealthapp.net:8080',
-    'mediators_url': 'https://him-mediators.globalhealthapp.net',
+    'mediators_url': 'https://him.globalhealthapp.net:8080/mediators',
     'verify_cert': False,
 
-    'force_config': True,
+    'force_config': False,
     'interval': 10,
 
     'register': True,
@@ -64,12 +64,12 @@ MEDIATOR_CONF = {
                     'host': '127.0.0.1',
                     'port': '8000',
                     'primary': True,
-                    'type': 'https',
+                    'type': 'http',
                 }
             ],
             'allow': ['admin'],
             'methods': ['GET', 'POST'],
-            'type': 'https',
+            'type': 'http',
         }
     ],
     'endpoints': [
@@ -79,7 +79,7 @@ MEDIATOR_CONF = {
             'path': '/',
             'port': '8000',
             'primary': True,
-            'type': 'https',
+            'type': 'http',
         }
     ]
 }

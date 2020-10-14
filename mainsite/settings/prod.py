@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 # This can be changed if we want to limit the hosts that can connect to this app in production
 ALLOWED_HOSTS = ['*']

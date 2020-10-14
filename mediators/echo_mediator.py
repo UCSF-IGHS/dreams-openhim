@@ -3,6 +3,7 @@ from copy import copy
 from .mediator_registration import MediatorRegistration
 from django.conf import settings
 
+
 class EchoMediator:
     def __init__(self):
         self.options = copy(settings.OPENHIM_OPTIONS)
