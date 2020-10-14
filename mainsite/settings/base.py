@@ -27,6 +27,60 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# OpenHIM mediator settings
+
+OPENHIM_OPTIONS = {
+    'username': 'admin@openhim.org',
+    'password': 'iJd8#BcWVnp*',
+    'apiURL': 'https://him.globalhealthapp.net/',
+    'verify_cert': False,
+
+    'force_config': False,
+    'interval': 10,
+
+    'register': True,
+    'heartbeat': True,
+}
+
+MEDIATOR_CONF = {
+    'urn': 'urn:mediator:echo_test',
+    'version': '0.0.1',
+    'name': 'Echo Mediator',
+    'description': 'Echos posted input',
+    'defaultChannelConfig': [
+        {
+            'name': 'Echo Mediator',
+            'urlPattern': '^/echo$',
+            'alerts': [],
+            'txRerunAcl': [],
+            'txViewFullAcl': [],
+            'txViewAcl': [],
+            'properties': [],
+            'matchContentTypes': [],
+            'routes': [
+                {
+                    'name': 'Echo mediator route',
+                    'host': '127.0.0.1',
+                    'port': '8000',
+                    'primary': True,
+                    'type': 'https',
+                }
+            ],
+            'allow': ['admin'],
+            'type': 'https',
+        }
+    ],
+    'endpoints': [
+        {
+            'name': 'Echo mediator route',
+            'host': '127.0.0.1',
+            'path': '/',
+            'port': '8000',
+            'primary': True,
+            'type': 'https',
+        }
+    ]
+}
 
 # Application definition
 
@@ -37,6 +91,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'mediators',
 ]
 
@@ -124,4 +179,4 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-STATIC_ROOT = '/var/www/him-mediators.globalhealthapp.net'
+STATIC_ROOT = '/var/www/127.0.0.1'
