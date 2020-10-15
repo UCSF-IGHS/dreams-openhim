@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 OPENHIM_OPTIONS = {
     'username': 'root@openhim.org',
     'password': 'iJd8#BcWVnp*',
-    'apiURL': 'https://him.globalhealthapp.net:8080',
-    'mediators_url': 'https://him.globalhealthapp.net:8080/mediators',
+    'apiURL': 'https://him-admin.globalhealthapp.net:8080',
+    'mediators_url': 'https://him-admin.globalhealthapp.net:8080/mediators',
     'verify_cert': False,
 
     'force_config': False,
@@ -43,7 +43,7 @@ OPENHIM_OPTIONS = {
     'heartbeat': True,
 }
 
-MEDIATOR_CONF = {
+ECHO_MEDIATOR_CONF = {
     'urn': 'urn:mediator:echo_test',
     'version': '0.0.1',
     'name': 'Echo Mediator',
@@ -77,6 +77,47 @@ MEDIATOR_CONF = {
             'name': 'Echo mediator route',
             'host': '127.0.0.1',
             'path': '/',
+            'port': '8000',
+            'primary': True,
+            'type': 'http',
+        }
+    ]
+}
+
+DREAMS_INTERVENTION_MEDIATOR_CONF = {
+    'urn': 'urn:mediator:dream-odk-intervention',
+    'version': '0.0.1',
+    'name': 'DREAMS ODK Intervention Mediator',
+    'description': 'Converts ODK json into DREAMS API json',
+    'defaultChannelConfig': [
+        {
+            'name': 'DREAMS Interventions Mediator',
+            'urlPattern': '^/dreams-odk-intervention$',
+            'alerts': [],
+            'txRerunAcl': [],
+            'txViewFullAcl': [],
+            'txViewAcl': [],
+            'properties': [],
+            'matchContentTypes': [],
+            'routes': [
+                {
+                    'name': 'DREAMS ODK mediator route',
+                    'host': '127.0.0.1',
+                    'port': '8000',
+                    'primary': True,
+                    'type': 'http',
+                }
+            ],
+            'allow': ['admin', 'dreams-app'],
+            'methods': ['GET', 'POST'],
+            'type': 'http',
+        }
+    ],
+    'endpoints': [
+        {
+            'name': 'DREAMS ODK mediator route',
+            'host': '127.0.0.1',
+            'path': '/dreams-odk-intervention/',
             'port': '8000',
             'primary': True,
             'type': 'http',

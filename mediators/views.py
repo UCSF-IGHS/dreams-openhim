@@ -1,8 +1,10 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from mediators.dreams_intervention_mediator import DreamsInterventionMediator
 from .echo_mediator import EchoMediator
 
 
@@ -11,10 +13,10 @@ def index(request):
 
 
 class RegisterEchoAPIView(APIView):
-    def post(self, request):
-        print('Initialize Mediator')
-        EchoMediator()
-        return Response("Working", status.HTTP_200_OK)
+    def get(self, request):
+        mediator = EchoMediator()
+        mediator.register()
+        return Response("Mediator Registered Successfully", status.HTTP_200_OK)
 
 
 class EchoAPIView(APIView):
@@ -22,18 +24,15 @@ class EchoAPIView(APIView):
         return Response(self.request.data, status.HTTP_200_OK)
 
 
-class RegisterDreamsODKAPIView(APIView):
+class RegisterDreamsInterventionMediatorAPIView(APIView):
+    def get(self, request):
+        mediator = DreamsInterventionMediator()
+        mediator.register()
+        return Response("Mediator Registered Successfully", status.HTTP_200_OK)
+
+
+class DreamsInterventionMediatorAPIView(APIView):
     def post(self, request):
-        print('Initialize Mediator')
-        EchoMediator()
-        return Response("Working", status.HTTP_200_OK)
-
-
-class DreamsODKAPIView(APIView):
-    def post(self, request):
-        # get DREAMS APP API
-        # change json format
-        # response with the json
-        return Response(self.request.data, status.HTTP_200_OK)
-
-# ODK -> OpenHIM -> DreamsODKAPIView -> OpenHIM -> DREAMS app
+        mediator = DreamsInterventionMediator()
+        converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
+        return HttpResponse(converted_json, content_type='application/json')
