@@ -61,8 +61,8 @@ ECHO_MEDIATOR_CONF = {
             'routes': [
                 {
                     'name': 'Echo mediator route',
-                    'host': '127.0.0.1',
-                    'port': '8000',
+                    'host': 'him-mediators.globalhealthapp.net',
+                    'port': '443',
                     'primary': True,
                     'type': 'http',
                 }
@@ -75,9 +75,9 @@ ECHO_MEDIATOR_CONF = {
     'endpoints': [
         {
             'name': 'Echo mediator route',
-            'host': '127.0.0.1',
-            'path': '/',
-            'port': '8000',
+            'host': 'him-mediators.globalhealthapp.net',
+            'path': '/echo/',
+            'port': '443',
             'primary': True,
             'type': 'http',
         }
@@ -102,8 +102,8 @@ DREAMS_INTERVENTION_MEDIATOR_CONF = {
             'routes': [
                 {
                     'name': 'DREAMS ODK mediator route',
-                    'host': '127.0.0.1',
-                    'port': '8000',
+                    'host': 'him-mediators.globalhealthapp.net',
+                    'port': '443',
                     'primary': True,
                     'type': 'http',
                 }
@@ -116,9 +116,9 @@ DREAMS_INTERVENTION_MEDIATOR_CONF = {
     'endpoints': [
         {
             'name': 'DREAMS ODK mediator route',
-            'host': '127.0.0.1',
+            'host': 'him-mediators.globalhealthapp.net',
             'path': '/dreams-odk-intervention/',
-            'port': '8000',
+            'port': '443',
             'primary': True,
             'type': 'http',
         }
