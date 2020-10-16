@@ -2,6 +2,7 @@ import json
 from django.test import TestCase
 
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
+from mediators.views.dreams_intervention_mediator_api_view import DreamsInterventionMediatorAPIView
 
 
 class DreamsInterventionMediatorTestCase(TestCase):
@@ -662,7 +663,7 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertEqual(15, len(converted_json))
 
         for intervention in converted_json:
-            self.assertEqual(intervention["client_id"], "1")
+            self.assertEqual(intervention["client"], "1")
             self.assertEqual(intervention["dreams_id"], "5/1204/17")
 
         intervention_date_for_the_first_intervention = converted_json[0]["intervention_date"]
@@ -677,3 +678,26 @@ class DreamsInterventionMediatorTestCase(TestCase):
         converted_json = json.loads("{ \"key\": 4  }")
         returned_value = DreamsInterventionMediator.get_value_or_none(converted_json, "key")
         self.assertEqual(4, returned_value)
+
+    def test_call_dreams_interventions_api(self):
+        converted_json = [{
+            "intervention_date": "2020-10-01",
+            "client": 1,
+            "dreams_id": "2/2/2222",
+            "intervention_type": 1002,
+            "name_specified": None,
+            "hts_result": 201,
+            "pregnancy_test_result": 101,
+            "client_ccc_number": None,
+            "date_linked_to_ccc": None,
+            "number_of_sessions_attended": None,
+            "comment": None,
+            "created_by": "api_user",
+            "implementing_partner": 6,
+            "external_organisation": None,
+            "external_organisation_other": None
+        }]
+        mediator_view = DreamsInterventionMediatorAPIView()
+        for intervention in converted_json:
+            api_response_status_code = mediator_view.call_dreams_interventions_api(json.dumps(intervention))
+            self.assertEqual(201, api_response_status_code)
