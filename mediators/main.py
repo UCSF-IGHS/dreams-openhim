@@ -1,6 +1,6 @@
-from .auth import Auth
-from .mediator_registration import MediatorRegistration
-from .heartbeat import Heartbeat
+from mediators.registration.auth import Auth
+from mediators.registration.mediator_registration import MediatorRegistration
+from mediators.registration.heartbeat import Heartbeat
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
