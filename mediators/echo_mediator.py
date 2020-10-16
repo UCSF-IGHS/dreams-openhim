@@ -1,6 +1,6 @@
-from .auth import Auth
+from mediators.registration.auth import Auth
 from copy import copy
-from .mediator_registration import MediatorRegistration
+from mediators.registration.mediator_registration import MediatorRegistration
 from django.conf import settings
 
 
