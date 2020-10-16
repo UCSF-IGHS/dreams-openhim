@@ -33,7 +33,7 @@ class DreamsInterventionMediator:
             for odk_intervention in data["g_intervention"]:
                 intervention = {
                     "intervention_date": self.get_value_or_none(odk_intervention, "intervention_date"),
-                    "client_id": client_id,
+                    "client": client_id,
                     "dreams_id": dreams_id,
                     "created_by": user,
                     "implementing_partner": implementing_partner,
@@ -46,8 +46,8 @@ class DreamsInterventionMediator:
                     "number_of_sessions_attended": self.get_value_or_none(odk_intervention,
                                                                           "number_of_sessions_attended"),
                     "comment": self.get_value_or_none(odk_intervention, "comments"),
-                    "external_organization": self.get_value_or_none(odk_intervention, "external_organization"),
-                    "external_organization_other": self.get_value_or_none(odk_intervention,
+                    "external_organisation": self.get_value_or_none(odk_intervention, "external_organization"),
+                    "external_organisation_other": self.get_value_or_none(odk_intervention,
                                                                           "other_external_organization"),
                 }
                 converted_json_dictionary.append(intervention)
