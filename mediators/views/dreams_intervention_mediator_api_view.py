@@ -10,15 +10,18 @@ from django.conf import settings
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
 from datetime import datetime
 
+from django.contrib.sites.shortcuts import get_current_site
+
 class DreamsInterventionMediatorAPIView(APIView):
     def post(self, request):
         mediator = DreamsInterventionMediator()
-        converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
-        status_code = self.call_dreams_interventions_api(converted_json)
+        converted_json = None
+        # converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
+        status_code = self.call_dreams_interventions_api(converted_json, request)
         response = json.dumps({"dreams_api_response": status_code})
         return HttpResponse(response, content_type='application/json')
 
-    def call_dreams_interventions_api(self, data):
+    def call_dreams_interventions_api(self, data, request):
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url=api_conf['api_end_point'], headers=headers,
@@ -27,37 +30,39 @@ class DreamsInterventionMediatorAPIView(APIView):
 
         orchestrationsResults = []
         orchestrationsResults = []
-        timestamp = datetime.now()
-        orchestrationsResults.append({
-            name: 'Post DREAMS Intervention',
-            request: {
-                path: request.path,
-                headers: request.headers,
-                querystring: request.originalUrl.replace(request.path, ''),
-                body: request.body,
-                method: request.method,
-                timestamp: timestamp
+        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        request_body = request.body.decode("utf-8")
+        orignal_url = get_current_site(request).domain
+        orchestrationsResults.append(json.dumps({
+            "name": "Post DREAMS Intervention",
+            "request": {
+                "path": request.path,
+                #"headers": json.dumps(request.headers),
+                "querystring": orignal_url,
+                "body": request_body,
+                "method": request.method,
+                "timestamp": ""
             },
-            response: {
-                status: response.status_code,
-                body: JSON.stringify(response.body, null, 4),
-                timestamp: timestamp
+            "response": {
+                "status": response.status_code,
+                "body": request_body,
+                "timestamp": ""
             }
-        })
+        }))
         properties = {}
         openhim_response = {
-            status: response.status_code,
-            headers: {
-                'content-type': 'application/json'
+            "status": response.status_code,
+            "headers": {
+                "content-type": "application/json"
             },
-            body: JSON.stringify(response.body, null, 4),
-            timestamp: timestamp
+            "body": request_body,
+            "timestamp": timestamp
         }
         returnObject = {
-            'x-mediator-urn': {},
-            status: response.status_code,
-            response: openhim_response,
-            orchestrations: orchestrationsResults,
-            properties: properties
+            "x-mediator-urn": {},
+            "status": response.status_code,
+            "response": openhim_response,
+            "orchestrations": orchestrationsResults,
+            "properties": properties
         }                                                    
         return returnObject
