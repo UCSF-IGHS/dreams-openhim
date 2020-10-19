@@ -28,12 +28,12 @@ class DreamsInterventionMediatorAPIView(APIView):
                                  data=data, auth=HTTPBasicAuth(api_conf['api_user_name'],
                                                                api_conf['api_password']))
 
-        orchestrationsResults = []
-        orchestrationsResults = []
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         request_body = request.body.decode("utf-8")
         orignal_url = get_current_site(request).domain
-        orchestrationsResults.append(json.dumps({
+
+        orchestrations_results = []
+        orchestrations_results.append(json.dumps({
             "name": "Post DREAMS Intervention",
             "request": {
                 "path": request.path,
@@ -58,11 +58,11 @@ class DreamsInterventionMediatorAPIView(APIView):
             "body": request_body,
             "timestamp": timestamp
         }
-        returnObject = {
+        return_object = {
             "x-mediator-urn": {},
             "status": response.status_code,
             "response": openhim_response,
-            "orchestrations": orchestrationsResults,
+            "orchestrations": orchestrations_results,
             "properties": properties
         }                                                    
-        return returnObject
+        return json.dumps(return_object)
