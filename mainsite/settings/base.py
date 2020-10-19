@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 OPENHIM_OPTIONS = {
     'username': 'root@openhim.org',
     'password': 'iJd8#BcWVnp*',
-    'apiURL': 'https://him-admin.globalhealthapp.net:8080',
-    'mediators_url': 'https://him-admin.globalhealthapp.net:8080/mediators',
+    'apiURL': ' https://him-auth.globalhealthapp.net:443',
+    'mediators_url': ' https://him-auth.globalhealthapp.net:443/mediators',
     'verify_cert': False,
 
     'force_config': False,
