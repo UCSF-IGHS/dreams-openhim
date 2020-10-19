@@ -15,8 +15,7 @@ from django.contrib.sites.shortcuts import get_current_site
 class DreamsInterventionMediatorAPIView(APIView):
     def post(self, request):
         mediator = DreamsInterventionMediator()
-        converted_json = None
-        # converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
+        converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
         status_code = self.call_dreams_interventions_api(converted_json, request)
         response = json.dumps({"dreams_api_response": status_code})
         return HttpResponse(response, content_type='application/json')
