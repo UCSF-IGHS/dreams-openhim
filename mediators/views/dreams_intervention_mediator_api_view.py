@@ -15,8 +15,9 @@ from django.contrib.sites.shortcuts import get_current_site
 class DreamsInterventionMediatorAPIView(APIView):
     def post(self, request):
         mediator = DreamsInterventionMediator()
+        request_body = request.body.decode("utf-8")
         converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
-        status_code = self.call_dreams_interventions_api(converted_json, request)
+        status_code = self.call_dreams_interventions_api(converted_json, request, request_body)
         response = json.dumps({"dreams_api_response": status_code})
         return HttpResponse(response, content_type='application/json')
 
@@ -28,7 +29,6 @@ class DreamsInterventionMediatorAPIView(APIView):
                                                                api_conf['api_password']))
 
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        request_body = request.body.decode("utf-8")
         orignal_url = get_current_site(request).domain
 
         orchestrations_results = []
