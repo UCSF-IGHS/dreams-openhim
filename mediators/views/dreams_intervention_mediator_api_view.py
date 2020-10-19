@@ -8,7 +8,7 @@ from copy import copy
 
 from django.conf import settings
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
-
+from datetime import datetime
 
 class DreamsInterventionMediatorAPIView(APIView):
     def post(self, request):
@@ -24,4 +24,40 @@ class DreamsInterventionMediatorAPIView(APIView):
         response = requests.post(url=api_conf['api_end_point'], headers=headers,
                                  data=data, auth=HTTPBasicAuth(api_conf['api_user_name'],
                                                                api_conf['api_password']))
-        return response.status_code
+
+        orchestrationsResults = []
+        orchestrationsResults = []
+        timestamp = datetime.now()
+        orchestrationsResults.append({
+            name: 'Post DREAMS Intervention',
+            request: {
+                path: request.path,
+                headers: request.headers,
+                querystring: request.originalUrl.replace(request.path, ''),
+                body: request.body,
+                method: request.method,
+                timestamp: timestamp
+            },
+            response: {
+                status: response.status_code,
+                body: JSON.stringify(response.body, null, 4),
+                timestamp: timestamp
+            }
+        })
+        properties = {}
+        openhim_response = {
+            status: response.status_code,
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(response.body, null, 4),
+            timestamp: timestamp
+        }
+        returnObject = {
+            'x-mediator-urn': {},
+            status: response.status_code,
+            response: openhim_response,
+            orchestrations: orchestrationsResults,
+            properties: properties
+        }                                                    
+        return returnObject
