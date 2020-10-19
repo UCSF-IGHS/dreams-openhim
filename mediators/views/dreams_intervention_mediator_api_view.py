@@ -21,7 +21,7 @@ class DreamsInterventionMediatorAPIView(APIView):
         response = json.dumps({"dreams_api_response": status_code})
         return HttpResponse(response, content_type='application/json')
 
-    def call_dreams_interventions_api(self, data, request):
+    def call_dreams_interventions_api(self, data, request, request_body):
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url=api_conf['api_end_point'], headers=headers,
