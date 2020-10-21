@@ -31,29 +31,29 @@ class DreamsInterventionMediatorAPIView(APIView):
 
     def generate_orchestration_results(self, request, request_body, response):
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        orchestrations_results = [json.dumps({
+        orchestrations_results = [{
             "name": "Post DREAMS Intervention",
             "request": {
                 "path": request.path,
-                "headers": request.headers,
+                "headers": request.headers._store,
                 "querystring": None,
-                "body": request_body,
+                "body": json.loads(request.body),
                 "method": request.method,
                 "timestamp": ""
             },
             "response": {
                 "status": response.status_code,
-                "body": request_body,
+                "body": json.loads(request.body),
                 "timestamp": timestamp
             }
-        })]
+        }]
 
         openhim_response = {
             "status": response.status_code,
             "headers": {
                 "content-type": "application/json"
             },
-            "body": request_body,
+            "body": json.loads(request.body),
             "timestamp": timestamp
         }
 
