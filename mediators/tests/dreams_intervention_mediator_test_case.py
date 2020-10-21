@@ -714,7 +714,7 @@ class DreamsInterventionMediatorTestCase(TestCase):
         mock_request.get_host = ''
         mock_request.querystring = None
         mock_request.return_value.status_code = 200
-        mock_request.headers = {'content-type': 'application/json', 'content-length': 200}
+        mock_request.headers._store = {'content-type': 'application/json', 'content-length': 200}
         mock_request.body = json.dumps(self.converted_json)
 
         response = requests.post('/api/', json.dumps(self.converted_json), 'application/json')
