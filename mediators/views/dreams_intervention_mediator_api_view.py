@@ -30,6 +30,7 @@ class DreamsInterventionMediatorAPIView(APIView):
         return response
 
     def generate_orchestration_results(self, request, request_body, response):
+        mediator_conf = copy(settings.DREAMS_INTERVENTION_MEDIATOR_CONF)
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         orchestrations_results = [{
             "name": "Post DREAMS Intervention",
@@ -62,7 +63,7 @@ class DreamsInterventionMediatorAPIView(APIView):
         }
 
         return_object = {
-            "x-mediator-urn": {},
+            "x-mediator-urn": mediator_conf['urn'],
             "status": response.status_code,
             "response": openhim_response,
             "orchestrations": orchestrations_results,
