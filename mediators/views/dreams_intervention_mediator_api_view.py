@@ -35,16 +35,16 @@ class DreamsInterventionMediatorAPIView(APIView):
         orchestrations_results = [{
             "name": "Post DREAMS Intervention",
             "request": {
-                "path": request.path,
-                "headers": request.headers._store,
+                "path": response.request.path_url,
+                "headers": response.request.headers._store,
                 "querystring": None,
-                "body": json.loads(request.body),
-                "method": request.method,
-                "timestamp": ""
+                "body": json.loads(response.request.body),
+                "method": response.request.method,
+                "timestamp": timestamp
             },
             "response": {
                 "status": response.status_code,
-                "body": json.loads(request.body),
+                "body": json.loads(response.content),
                 "timestamp": timestamp
             }
         }]
