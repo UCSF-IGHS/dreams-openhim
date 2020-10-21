@@ -1,4 +1,7 @@
 import json
+from unittest.mock import patch, Mock
+
+import requests
 from django.test import TestCase
 
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
@@ -653,6 +656,23 @@ class DreamsInterventionMediatorTestCase(TestCase):
             }
           ]
         }
+        self.converted_json = [{
+            "intervention_date": "2020-10-01",
+            "client": 1,
+            "dreams_id": "2/2/2222",
+            "intervention_type": 1002,
+            "name_specified": None,
+            "hts_result": 201,
+            "pregnancy_test_result": 101,
+            "client_ccc_number": None,
+            "date_linked_to_ccc": None,
+            "number_of_sessions_attended": None,
+            "comment": None,
+            "created_by": "api_user",
+            "implementing_partner": 6,
+            "external_organisation": None,
+            "external_organisation_other": None
+        }]
 
     def test_convert_to_dream_intervention_api_json_returns_correct_data(self):
         mediator = DreamsInterventionMediator()
@@ -680,24 +700,26 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertEqual(4, returned_value)
 
     def test_call_dreams_interventions_api(self):
-        converted_json = [{
-            "intervention_date": "2020-10-01",
-            "client": 1,
-            "dreams_id": "2/2/2222",
-            "intervention_type": 1002,
-            "name_specified": None,
-            "hts_result": 201,
-            "pregnancy_test_result": 101,
-            "client_ccc_number": None,
-            "date_linked_to_ccc": None,
-            "number_of_sessions_attended": None,
-            "comment": None,
-            "created_by": "api_user",
-            "implementing_partner": 6,
-            "external_organisation": None,
-            "external_organisation_other": None
-        }]
         mediator_view = DreamsInterventionMediatorAPIView()
-        for intervention in converted_json:
+        for intervention in self.converted_json:
             api_response_status_code = mediator_view.call_dreams_interventions_api(json.dumps(intervention))
-            self.assertEqual(201, api_response_status_code)
+            self.assertEqual(201, api_response_status_code.status_code)
+
+    @patch('requests.post')
+    def test_generate_orchestration_results(self, mock_request):
+
+        mock_request.get.content.return_value = '{status_code: 200}'
+        mock_request.path = '/api/v1/interventions/'
+        mock_request.method = 'POST'
+        mock_request.get_host = ''
+        mock_request.querystring = None
+        mock_request.return_value.status_code = 200
+        mock_request.headers = {'content-type': 'application/json', 'content-length': 200}
+        mock_request.body = json.dumps(self.converted_json)
+
+        response = requests.post('/api/', json.dumps(self.converted_json), 'application/json')
+        self.assertEqual(response.status_code, 200)
+
+        mediator_view = DreamsInterventionMediatorAPIView()
+        mediator_view.generate_orchestration_results(mock_request, None, response)
+        self.assertIsNotNone(response)
