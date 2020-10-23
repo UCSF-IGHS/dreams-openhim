@@ -750,3 +750,19 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertIsNotNone(response_to_him['response'])
         self.assertIsNotNone(response_to_him['orchestrations'])
         self.assertIsNotNone(response_to_him['properties'])
+
+    def test_concatenate_comments(self):
+        string_1 = "test"
+        string_2 = "123"
+
+        concatenation = DreamsInterventionMediator.concatenate_comments(string_1, string_2)
+        self.assertEqual("test; 123", concatenation)
+
+        concatenation = DreamsInterventionMediator.concatenate_comments(string_1, None)
+        self.assertEqual("test", concatenation)
+
+        concatenation = DreamsInterventionMediator.concatenate_comments(None, string_2)
+        self.assertEqual("123", concatenation)
+
+        concatenation = DreamsInterventionMediator.concatenate_comments(None, None)
+        self.assertIsNone(concatenation)
