@@ -1,8 +1,12 @@
 import json
-from unittest.mock import patch, Mock
+from copy import copy
+from unittest.mock import patch
 
 import requests
+from django.conf import settings
 from django.test import TestCase
+from requests import Session
+from requests.auth import HTTPBasicAuth
 
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
 from mediators.views.dreams_intervention_mediator_api_view import DreamsInterventionMediatorAPIView
@@ -699,27 +703,43 @@ class DreamsInterventionMediatorTestCase(TestCase):
         returned_value = DreamsInterventionMediator.get_value_or_none(converted_json, "key")
         self.assertEqual(4, returned_value)
 
-    def test_call_dreams_interventions_api(self):
+    @patch('requests.post')
+    def test_call_dreams_interventions_api(self, mock_request):
+        api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
+        mock_request.get.content.return_value = '{status_code: 200}'
+        mock_request.path_url = api_conf['api_end_point']
+        mock_request.auth = HTTPBasicAuth(api_conf['api_user_name'], api_conf['api_password'])
+        mock_request.method = 'POST'
+        mock_request.return_value.status_code = 201
+        mock_request.return_value.body = json.dumps({"status": "success"})
+
         mediator_view = DreamsInterventionMediatorAPIView()
         for intervention in self.converted_json:
-            api_response_status_code = mediator_view.call_dreams_interventions_api(json.dumps(intervention))
-            self.assertEqual(201, api_response_status_code.status_code)
+            api_response = mediator_view.call_dreams_interventions_api(json.dumps(intervention))
+            self.assertIsNotNone(api_response)
 
-    @patch('requests.post')
+    @patch.object(Session, 'send')
     def test_generate_orchestration_results(self, mock_request):
-
-        mock_request.get.content.return_value = '{status_code: 200}'
-        mock_request.path = '/api/v1/interventions/'
+        api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
+        mock_request.path = api_conf['api_end_point']
         mock_request.method = 'POST'
-        mock_request.get_host = ''
         mock_request.querystring = None
         mock_request.return_value.status_code = 200
         mock_request.headers._store = {'content-type': 'application/json', 'content-length': 200}
-        mock_request.body = json.dumps(self.converted_json)
+        mock_request.return_value.content = json.dumps(self.converted_json)
 
-        response = requests.post('/api/', json.dumps(self.converted_json), 'application/json')
+        request = requests.Request(method='POST', url=api_conf['api_end_point'], data=json.dumps(self.converted_json),
+                                   json=self.converted_json, headers={'content-type': 'application/json', })
+
+        prepared_request = request.prepare()
+        prepared_request.data = self.converted_json
+
+        mock_request.return_value.request = prepared_request
+
+        session = requests.Session()
+        response = session.send(prepared_request)
         self.assertEqual(response.status_code, 200)
 
         mediator_view = DreamsInterventionMediatorAPIView()
-        mediator_view.generate_orchestration_results(mock_request, None, response)
+        mediator_view.generate_orchestration_results(prepared_request, response)
         self.assertIsNotNone(response)
