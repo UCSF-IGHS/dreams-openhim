@@ -12,9 +12,9 @@ from datetime import datetime
 
 
 class DreamsInterventionMediatorAPIView(APIView):
+
     def post(self, request):
         mediator = DreamsInterventionMediator()
-        # request_body = request.body.decode("utf-8")
         converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
         api_response = self.call_dreams_interventions_api(converted_json)
         orchestration_results = self.generate_orchestration_results(request, api_response)
@@ -50,7 +50,7 @@ class DreamsInterventionMediatorAPIView(APIView):
         }]
 
         properties = {
-            "interventions_count": len(request.data)
+            "interventions_count": len(json.loads(response.request.body))
         }
 
         response_status = {

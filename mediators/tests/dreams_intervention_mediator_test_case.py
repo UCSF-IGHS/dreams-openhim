@@ -741,5 +741,12 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         mediator_view = DreamsInterventionMediatorAPIView()
-        mediator_view.generate_orchestration_results(prepared_request, response)
+        response_to_him = mediator_view.generate_orchestration_results(prepared_request, response)
+
         self.assertIsNotNone(response)
+        self.assertIsNotNone(response_to_him['x-mediator-urn'])
+        self.assertTrue(response_to_him['status'] in
+                        ['Processing', 'Failed', 'Completed', 'Successful', 'Completed with error(s)'])
+        self.assertIsNotNone(response_to_him['response'])
+        self.assertIsNotNone(response_to_him['orchestrations'])
+        self.assertIsNotNone(response_to_him['properties'])
