@@ -30,30 +30,32 @@ class DreamsInterventionMediator:
             implementing_partner = self.get_value_or_none(data, "implementing_partner")
 
             converted_json_dictionary = []
+            odk_interventions = self.get_value_or_none(data, "g_given_intervention")
 
-            for odk_intervention in data["g_intervention"]:
-                comments = self.concatenate_comments(self.get_value_or_none(odk_intervention, "comments"),
-                                                     self.get_value_or_none(odk_intervention, "referral"))
-                intervention = {
-                    "intervention_date": self.get_value_or_none(odk_intervention, "intervention_date"),
-                    "client": client_id,
-                    "dreams_id": dreams_id,
-                    "created_by": user,
-                    "implementing_partner": implementing_partner,
-                    "intervention_type": self.get_value_or_none(odk_intervention, "intervention_type"),
-                    "name_specified": self.get_value_or_none(odk_intervention, "other_intervention_types"),
-                    "pregnancy_test_result": self.get_value_or_none(odk_intervention, "pregnancy_test_reults"),
-                    "hts_result": self.get_value_or_none(odk_intervention, "hts_results"),
-                    "client_ccc_number": self.get_value_or_none(odk_intervention, "client_ccc_number"),
-                    "date_linked_to_ccc": None,
-                    "number_of_sessions_attended": self.get_value_or_none(odk_intervention,
-                                                                          "number_of_sessions_attended"),
-                    "comment": comments,
-                    "external_organisation": self.get_value_or_none(odk_intervention, "external_organization"),
-                    "external_organisation_other": self.get_value_or_none(odk_intervention,
-                                                                          "other_external_organization"),
-                }
-                converted_json_dictionary.append(intervention)
+            if odk_interventions:
+                for odk_intervention in odk_interventions:
+                    comments = self.concatenate_comments(self.get_value_or_none(odk_intervention, "comments"),
+                                                         self.get_value_or_none(odk_intervention, "referral"))
+                    intervention = {
+                        "intervention_date": self.get_value_or_none(odk_intervention, "intervention_date"),
+                        "client": client_id,
+                        "dreams_id": dreams_id,
+                        "created_by": user,
+                        "implementing_partner": implementing_partner,
+                        "intervention_type": self.get_value_or_none(odk_intervention, "intervention_type"),
+                        "name_specified": self.get_value_or_none(odk_intervention, "other_intervention_types"),
+                        "pregnancy_test_result": self.get_value_or_none(odk_intervention, "pregnancy_test_reults"),
+                        "hts_result": self.get_value_or_none(odk_intervention, "hts_results"),
+                        "client_ccc_number": self.get_value_or_none(odk_intervention, "client_ccc_number"),
+                        "date_linked_to_ccc": None,
+                        "number_of_sessions_attended": self.get_value_or_none(odk_intervention,
+                                                                              "number_of_sessions_attended"),
+                        "comment": comments,
+                        "external_organisation": self.get_value_or_none(odk_intervention, "external_organization"),
+                        "external_organisation_other": self.get_value_or_none(odk_intervention,
+                                                                              "other_external_organization"),
+                    }
+                    converted_json_dictionary.append(intervention)
 
             json_response = json.dumps(converted_json_dictionary)
             return json_response
