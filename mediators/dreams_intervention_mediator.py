@@ -51,7 +51,7 @@ class DreamsInterventionMediator:
                         "number_of_sessions_attended": self.get_value_or_none(odk_intervention,
                                                                               "number_of_sessions_attended"),
                         "comment": comments,
-                        "external_organisation": self.get_value_or_none(odk_intervention, "external_organization"),
+                        "external_organisation": self.get_value_or_none(odk_intervention, "external_organization_name"),
                         "external_organisation_other": self.get_value_or_none(odk_intervention,
                                                                               "other_external_organization"),
                     }
