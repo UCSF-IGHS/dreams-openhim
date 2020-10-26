@@ -42,7 +42,7 @@ class DreamsInterventionMediator:
                         "dreams_id": dreams_id,
                         "created_by": user,
                         "implementing_partner": implementing_partner,
-                        "intervention_type": self.get_value_or_none(odk_intervention, "intervention_type"),
+                        "intervention_type": self.get_value_or_none(odk_intervention, "intervention_types"),
                         "name_specified": self.get_value_or_none(odk_intervention, "other_intervention_types"),
                         "pregnancy_test_result": self.get_value_or_none(odk_intervention, "pregnancy_test_reults"),
                         "hts_result": self.get_value_or_none(odk_intervention, "hts_results"),
@@ -53,7 +53,7 @@ class DreamsInterventionMediator:
                         "comment": comments,
                         "external_organisation": self.get_value_or_none(odk_intervention, "external_organization_name"),
                         "external_organisation_other": self.get_value_or_none(odk_intervention,
-                                                                              "other_external_organization"),
+                                                                              "other_external_organization_name"),
                     }
                     converted_json_dictionary.append(intervention)
 
