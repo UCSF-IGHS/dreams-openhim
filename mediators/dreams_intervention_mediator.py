@@ -31,7 +31,7 @@ class DreamsInterventionMediator:
 
             converted_json_dictionary = []
 
-            for odk_intervention in data["g_intervention"]:
+            for odk_intervention in data["g_given_intervention"]:
                 comments = self.concatenate_comments(self.get_value_or_none(odk_intervention, "comments"),
                                                      self.get_value_or_none(odk_intervention, "referral"))
                 intervention = {
