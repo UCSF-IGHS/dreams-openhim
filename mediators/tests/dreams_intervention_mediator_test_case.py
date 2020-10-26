@@ -328,6 +328,12 @@ class DreamsInterventionMediatorTestCase(TestCase):
         returned_value = DreamsInterventionMediator.get_value_or_none(converted_json, "key")
         self.assertEqual(4, returned_value)
 
+    def test_get_value_or_none_returns_array(self):
+        converted_json = json.loads("{ \"key\": [{\"key1\": 1}, {\"key2\": 22}]  }")
+        returned_value = DreamsInterventionMediator.get_value_or_none(converted_json, "key")
+        self.assertEqual(2, len(returned_value))
+        self.assertEqual(22, returned_value[1]['key2'])
+
     @patch('requests.post')
     def test_call_dreams_interventions_api(self, mock_request):
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
