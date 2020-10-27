@@ -19,7 +19,7 @@ class DreamsInterventionMediatorAPIView(APIView):
         api_response = self.call_dreams_interventions_api(converted_json)
         orchestration_results = self.generate_orchestration_results(request, api_response)
         response = json.dumps(orchestration_results)
-        return HttpResponse(response, content_type='application/json+openhim')
+        return HttpResponse(response, content_type='application/json')
 
     def call_dreams_interventions_api(self, data):
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
