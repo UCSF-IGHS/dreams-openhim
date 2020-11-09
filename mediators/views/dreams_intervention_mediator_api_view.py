@@ -37,7 +37,7 @@ class DreamsInterventionMediatorAPIView(APIView, ResponseStatusMixin):
 
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
         headers = {"Content-Type": "application/json"}
-        response = requests.post(url=api_conf['api_end_point'], headers=headers, data=intervention,
+        response = requests.post(url=api_conf['api_end_point'], headers=headers, data=json.dumps(intervention),
                                  auth=HTTPBasicAuth(api_conf['api_user_name'], api_conf['api_password']))
         return response
 
