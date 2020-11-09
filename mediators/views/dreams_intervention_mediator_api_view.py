@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from requests.auth import HTTPBasicAuth
 from rest_framework.views import APIView
-from rest_framework import status as status_codes
+from rest_framework import status as status_codes, status
 from copy import copy
 
 from django.conf import settings
@@ -29,7 +29,9 @@ class DreamsInterventionMediatorAPIView(APIView, ResponseStatusMixin):
 
         mediator_response = self.generate_mediator_response(request, orchestration_results)
         response = json.dumps(mediator_response)
-        return HttpResponse(response, content_type='application/json')
+        http_status_code = status.HTTP_422_UNPROCESSABLE_ENTITY \
+            if mediator_response["status"] != ResponseStatusMixin.MEDIATOR_RESPONSE_SUCCESSFUL else status.HTTP_200_OK
+        return HttpResponse(response, status=http_status_code, content_type='application/json')
 
     def upload_intervention_to_dreams_api(self, intervention):
         if isinstance(intervention, list):
