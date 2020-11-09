@@ -1,79 +1,63 @@
 import json
 
 import requests
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from requests.auth import HTTPBasicAuth
 from rest_framework.views import APIView
+from rest_framework import status as status_codes
 from copy import copy
 
 from django.conf import settings
 from mediators.dreams_intervention_mediator import DreamsInterventionMediator
 from datetime import datetime
 
+from mediators.mixins.response_status_mixin import ResponseStatusMixin
 
-class DreamsInterventionMediatorAPIView(APIView):
+
+class DreamsInterventionMediatorAPIView(APIView, ResponseStatusMixin):
 
     def post(self, request):
         mediator = DreamsInterventionMediator()
-        converted_json = mediator.convert_to_dream_intervention_api_json(self.request.data)
-        api_response = self.call_dreams_interventions_api(converted_json)
-        orchestration_results = self.generate_orchestration_results(request, api_response)
-        response = json.dumps(orchestration_results)
+        interventions = mediator.extract_interventions(self.request.data)
+
+        orchestration_results = []
+        for intervention in interventions:
+            api_response = self.upload_intervention_to_dreams_api(intervention)
+            orchestration_result = self.generate_orchestration_result(api_response, intervention)
+            orchestration_results.append(orchestration_result)
+
+        mediator_response = self.generate_mediator_response(request, orchestration_results)
+        response = json.dumps(mediator_response)
         return HttpResponse(response, content_type='application/json')
 
-    def call_dreams_interventions_api(self, data):
+    def upload_intervention_to_dreams_api(self, intervention):
+        if isinstance(intervention, list):
+            raise ValidationError('Found multiple interventions. Only one intervention can be uploaded per call')
+
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
         headers = {"Content-Type": "application/json"}
-        response = requests.post(url=api_conf['api_end_point'], headers=headers, data=data,
+        response = requests.post(url=api_conf['api_end_point'], headers=headers, data=intervention,
                                  auth=HTTPBasicAuth(api_conf['api_user_name'], api_conf['api_password']))
         return response
 
-    def generate_orchestration_results(self, request, response):
+    def generate_mediator_response(self, request, orchestration_results):
         mediator_conf = copy(settings.DREAMS_INTERVENTION_MEDIATOR_CONF)
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        orchestrations_results = [{
-            "name": "Post DREAMS Intervention",
-            "request": {
-                "path": response.request.path_url,
-                "headers": dict(response.request.headers),
-                "querystring": None,
-                "body": json.loads(response.request.body),
-                "method": response.request.method,
-                "timestamp": timestamp
-            },
-            "response": {
-                "status": response.status_code,
-                "body": json.loads(response.content),
-                "timestamp": timestamp
-            }
-        }]
+        status = ResponseStatusMixin.MEDIATOR_RESPONSE_SUCCESSFUL
 
-        properties = {
-            "interventions_count": len(json.loads(response.request.body))
-        }
-
-        response_status = {
-            "processing": 'Processing',
-            "failed": 'Failed',
-            "completed": 'Completed',
-            "successful": 'Successful',
-            "with_errors": 'Completed with error(s)'
-        }
-        status = ''
-        if 100 <= response.status_code <= 199:
-            status = response_status['processing']
-        elif 200 <= response.status_code <= 299:
-            status = response_status['successful']
-        elif 300 <= response.status_code <= 399:
-            status = response_status['completed']
-        elif 400 <= response.status_code <= 499:
-            status = response_status['completed']
-        elif 500 <= response.status_code <= 599:
-            status = response_status['failed']
+        try:
+            for orchestration_result in orchestration_results:
+                status = orchestration_result['response']['body']['status']
+                if status != ResponseStatusMixin.SUCCESS_CREATED and status != ResponseStatusMixin.SUCCESS_DUPLICATE_IGNORED:
+                    status = ResponseStatusMixin.MEDIATOR_RESPONSE_COMPLETED
+                    break
+        except:
+            status = ResponseStatusMixin.MEDIATOR_RESPONSE_COMPLETED_WITH_ERRORS
 
         response_to_originating_client = {
-            "status": 200,
+            "status": status_codes.HTTP_200_OK,
             "headers": {
                 "content-type": "application/json"
             },
@@ -85,7 +69,30 @@ class DreamsInterventionMediatorAPIView(APIView):
             "x-mediator-urn": mediator_conf['urn'],
             "status": status,
             "response": response_to_originating_client,
-            "orchestrations": orchestrations_results,
-            "properties": properties
+            "orchestrations": orchestration_results,
+            "properties": {
+                "interventions_count": len(orchestration_results)
+            }
         }
         return return_object
+
+    def generate_orchestration_result(self, response, intervention):
+        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        orchestrations_result = {
+            "name": "Post DREAMS Intervention",
+            "request": {
+                "path": response.request.path_url,
+                "headers": dict(response.request.headers),
+                "querystring": None,
+                "body": intervention,
+                "method": response.request.method,
+                "timestamp": timestamp
+            },
+            "response": {
+                "status": response.status_code,
+                "body": json.loads(response.content),
+                "timestamp": timestamp
+            }
+        }
+        return orchestrations_result

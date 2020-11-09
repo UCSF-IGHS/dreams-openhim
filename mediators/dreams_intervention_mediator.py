@@ -21,9 +21,10 @@ class DreamsInterventionMediator:
         )
         registration.run()
 
-    def convert_to_dream_intervention_api_json(self, odk_json):
+    def extract_interventions(self, odk_json):
 
         for data in odk_json["data"]:
+            instance_uuid = self.get_value_or_none(data, "*meta-instance-id*")
             client_id = self.get_value_or_none(data, "client_id")
             dreams_id = self.get_value_or_none(data, "dreams_id")
             user = self.get_value_or_none(data, "username")
@@ -54,11 +55,12 @@ class DreamsInterventionMediator:
                         "external_organisation": self.get_value_or_none(odk_intervention, "external_organization_name"),
                         "external_organisation_other": self.get_value_or_none(odk_intervention,
                                                                               "other_external_organization_name"),
+                        "odk_uuid": instance_uuid,
                     }
                     converted_json_dictionary.append(intervention)
 
             json_response = json.dumps(converted_json_dictionary)
-            return json_response
+            return converted_json_dictionary
 
     @staticmethod
     def concatenate_comments(string_1: String, string_2: String):
