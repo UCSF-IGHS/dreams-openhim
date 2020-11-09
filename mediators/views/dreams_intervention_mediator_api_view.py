@@ -49,12 +49,12 @@ class DreamsInterventionMediatorAPIView(APIView, ResponseStatusMixin):
 
         try:
             for orchestration_result in orchestration_results:
-                status = orchestration_result['response']['body']['status']
-                if status != ResponseStatusMixin.SUCCESS_CREATED and status != ResponseStatusMixin.SUCCESS_DUPLICATE_IGNORED:
+                response_status = orchestration_result['response']['body']['status']
+                if response_status != ResponseStatusMixin.SUCCESS_CREATED and response_status != ResponseStatusMixin.SUCCESS_DUPLICATE_IGNORED:
                     status = ResponseStatusMixin.MEDIATOR_RESPONSE_COMPLETED
                     break
         except:
-            status = ResponseStatusMixin.MEDIATOR_RESPONSE_COMPLETED_WITH_ERRORS
+            status = ResponseStatusMixin.MEDIATOR_RESPONSE_FAILED
 
         response_to_originating_client = {
             "status": status_codes.HTTP_200_OK,
