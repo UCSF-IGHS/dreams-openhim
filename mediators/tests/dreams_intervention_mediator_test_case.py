@@ -285,37 +285,58 @@ class DreamsInterventionMediatorTestCase(TestCase):
               }
             ]
           }
-        self.converted_json = [{
-            "intervention_date": "2020-10-01",
-            "client": 1,
-            "dreams_id": "2/2/2222",
-            "intervention_type": 1002,
-            "name_specified": None,
-            "hts_result": 201,
-            "pregnancy_test_result": 101,
-            "client_ccc_number": None,
-            "date_linked_to_ccc": None,
-            "number_of_sessions_attended": None,
-            "comment": None,
-            "created_by": "api_user",
-            "implementing_partner": 6,
-            "external_organisation": None,
-            "external_organisation_other": None
-        }]
+        self.converted_json = [
+            {
+                "intervention_date": "2020-10-01",
+                "client": 1,
+                "dreams_id": "2/2/2222",
+                "intervention_type": 1002,
+                "name_specified": None,
+                "hts_result": 201,
+                "pregnancy_test_result": 101,
+                "client_ccc_number": None,
+                "date_linked_to_ccc": None,
+                "number_of_sessions_attended": None,
+                "comment": None,
+                "created_by": "api_user",
+                "implementing_partner": 6,
+                "external_organisation": None,
+                "external_organisation_other": None,
+                "odk_uuid": "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d"
+            },
+            {
+                "intervention_date": "2020-10-01",
+                "client": 1,
+                "dreams_id": "2/2/2222",
+                "intervention_type": 1002,
+                "name_specified": None,
+                "hts_result": 201,
+                "pregnancy_test_result": 101,
+                "client_ccc_number": None,
+                "date_linked_to_ccc": None,
+                "number_of_sessions_attended": None,
+                "comment": None,
+                "created_by": "api_user",
+                "implementing_partner": 6,
+                "external_organisation": None,
+                "external_organisation_other": None,
+                "odk_uuid": "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d"
+            }
+        ]
 
-    def test_convert_to_dream_intervention_api_json_returns_correct_data(self):
+    def test_convert_to_dream_intervention_api_json_returns_list_of_interventions(self):
         mediator = DreamsInterventionMediator()
-        converted_json_str = mediator.convert_to_dream_intervention_api_json(self.odk_json)
-        self.assertIsNotNone(converted_json_str)
+        interventions = mediator.extract_interventions(self.odk_json)
+        self.assertIsNotNone(interventions)
 
-        converted_json = json.loads(converted_json_str)
-        self.assertEqual(12, len(converted_json))
+        self.assertEqual(12, len(interventions))
 
-        for intervention in converted_json:
+        for intervention in interventions:
             self.assertEqual(intervention["client"], "594774")
             self.assertEqual(intervention["dreams_id"], "5/1205/17")
+            self.assertEqual(intervention["odk_uuid"], "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d")
 
-        intervention_date_for_the_first_intervention = converted_json[0]["intervention_date"]
+        intervention_date_for_the_first_intervention = interventions[0]["intervention_date"]
         self.assertEqual(intervention_date_for_the_first_intervention, "2020-10-24")
 
     def test_get_value_or_none_returns_none(self):
@@ -335,6 +356,20 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertEqual(22, returned_value[1]['key2'])
 
     @patch('requests.post')
+    def test_call_dreams_interventions_api_fails_for_multiple_interventions(self, mock_request):
+        api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
+        mock_request.get.content.return_value = '{status_code: 200}'
+        mock_request.path_url = api_conf['api_end_point']
+        mock_request.auth = HTTPBasicAuth(api_conf['api_user_name'], api_conf['api_password'])
+        mock_request.method = 'POST'
+        mock_request.return_value.status_code = 201
+        mock_request.return_value.body = json.dumps({"status": "success"})
+
+        mediator_view = DreamsInterventionMediatorAPIView()
+        with self.assertRaises(Exception):
+            mediator_view.upload_intervention_to_dreams_api(self.converted_json)
+
+    @patch('requests.post')
     def test_call_dreams_interventions_api(self, mock_request):
         api_conf = copy(settings.DREAMS_INTERVENTION_API_ENDPOINT_CONF)
         mock_request.get.content.return_value = '{status_code: 200}'
@@ -346,7 +381,7 @@ class DreamsInterventionMediatorTestCase(TestCase):
 
         mediator_view = DreamsInterventionMediatorAPIView()
         for intervention in self.converted_json:
-            api_response = mediator_view.call_dreams_interventions_api(json.dumps(intervention))
+            api_response = mediator_view.upload_intervention_to_dreams_api(json.dumps(intervention))
             self.assertIsNotNone(api_response)
 
     @patch.object(Session, 'send')
@@ -359,7 +394,7 @@ class DreamsInterventionMediatorTestCase(TestCase):
         mock_request.headers._store = {'content-type': 'application/json', 'content-length': 200}
         mock_request.return_value.content = json.dumps(self.converted_json)
 
-        request = requests.Request(method='POST', url=api_conf['api_end_point'], data=json.dumps(self.converted_json),
+        request = requests.Request(method='POST', url=api_conf['api_end_point'], data=json.dumps(self.converted_json[0]),
                                    json=self.converted_json, headers={'content-type': 'application/json', })
 
         prepared_request = request.prepare()
@@ -372,7 +407,7 @@ class DreamsInterventionMediatorTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         mediator_view = DreamsInterventionMediatorAPIView()
-        response_to_him = mediator_view.generate_orchestration_results(prepared_request, response)
+        response_to_him = mediator_view.generate_mediator_response(prepared_request, response)
 
         self.assertIsNotNone(response)
         self.assertIsNotNone(response_to_him['x-mediator-urn'])
