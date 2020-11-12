@@ -2,6 +2,8 @@ from .base import *
 
 DEBUG = True
 
+ALLOWED_HOSTS = ['*']
+
 STATIC_URL = '/static/'
 
 DREAMS_INTERVENTION_API_ENDPOINT_CONF = {
