@@ -25,7 +25,7 @@ SECRET_KEY = 'bn73-d(el7hzda-37gb%34drd=+se8h5hfvygc#&36dw$_5t-$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # OpenHIM mediator settings
 
