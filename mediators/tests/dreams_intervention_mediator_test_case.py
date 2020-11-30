@@ -344,8 +344,8 @@ class DreamsInterventionMediatorTestCase(TestCase):
 
         uuid = "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d"
         for intervention in interventions:
-            self.assertEqual(intervention["odk_uuid"],
-                             '-'.join([x for x in (uuid, intervention["intervention_type"]) if x]))
+            uuid_and_intervention_type = '-'.join([x for x in (uuid, intervention["intervention_type"]) if x])
+            self.assertEqual(intervention["odk_uuid"], uuid_and_intervention_type)
 
     def test_get_value_or_none_returns_none(self):
         converted_json = json.loads("{ \"key\": null  }")
