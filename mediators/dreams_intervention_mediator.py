@@ -55,7 +55,10 @@ class DreamsInterventionMediator:
                         "external_organisation": self.get_value_or_none(odk_intervention, "external_organization_name"),
                         "external_organisation_other": self.get_value_or_none(odk_intervention,
                                                                               "other_external_organization_name"),
-                        "odk_uuid": instance_uuid,
+                        "odk_uuid": '-'.join([x for
+                                              x in (instance_uuid,
+                                                    self.get_value_or_none(odk_intervention, "intervention_types"))
+                                              if x]),
                     }
                     converted_json_dictionary.append(intervention)
 
