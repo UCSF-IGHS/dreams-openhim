@@ -334,10 +334,18 @@ class DreamsInterventionMediatorTestCase(TestCase):
         for intervention in interventions:
             self.assertEqual(intervention["client"], "594774")
             self.assertEqual(intervention["dreams_id"], "5/1205/17")
-            self.assertEqual(intervention["odk_uuid"], "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d")
 
         intervention_date_for_the_first_intervention = interventions[0]["intervention_date"]
         self.assertEqual(intervention_date_for_the_first_intervention, "2020-10-24")
+
+    def test_converted_json_concatenates_uuid_with_intervention_type(self):
+        mediator = DreamsInterventionMediator()
+        interventions = mediator.extract_interventions(self.odk_json)
+
+        uuid = "uuid:5b8430c0-7f0f-4f8e-ae94-d7055fbf355d"
+        for intervention in interventions:
+            self.assertEqual(intervention["odk_uuid"],
+                             '-'.join([x for x in (uuid, intervention["intervention_type"]) if x]))
 
     def test_get_value_or_none_returns_none(self):
         converted_json = json.loads("{ \"key\": null  }")
