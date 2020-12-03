@@ -29,9 +29,9 @@ class DreamsInterventionMediatorAPIView(APIView, ResponseStatusMixin):
 
         mediator_response = self.generate_mediator_response(request, orchestration_results)
         response = json.dumps(mediator_response)
-        http_status_code = status.HTTP_422_UNPROCESSABLE_ENTITY \
+        http_status_code = status.HTTP_202_ACCEPTED \
             if mediator_response["status"] != ResponseStatusMixin.MEDIATOR_RESPONSE_SUCCESSFUL else status.HTTP_200_OK
-        return HttpResponse(response, status=http_status_code, content_type='application/json')
+        return HttpResponse(response, status=http_status_code, content_type='application/json+openhim')
 
     def upload_intervention_to_dreams_api(self, intervention):
         if isinstance(intervention, list):
