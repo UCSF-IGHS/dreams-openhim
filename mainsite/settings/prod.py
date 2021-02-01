@@ -6,3 +6,9 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 STATIC_URL = '/static/'
+
+DREAMS_INTERVENTION_API_ENDPOINT_CONF = {
+    'api_user_name': 'api_user',
+    'api_password': 'f6UbyBK97qRxN3Gp',
+    'api_end_point': 'https://dreams.globalhealthapp.net/api/v1/interventions/'
+}

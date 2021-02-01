@@ -25,8 +25,111 @@ SECRET_KEY = 'bn73-d(el7hzda-37gb%34drd=+se8h5hfvygc#&36dw$_5t-$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+# OpenHIM mediator settings
+
+OPENHIM_OPTIONS = {
+    'username': 'root@openhim.org',
+    'password': 'iJd8#BcWVnp*',
+    'apiURL': ' https://him-auth.globalhealthapp.net:443',
+    'mediators_url': ' https://him-auth.globalhealthapp.net:443/mediators',
+    'verify_cert': False,
+
+    'force_config': False,
+    'interval': 10,
+
+    'register': True,
+    'heartbeat': True,
+}
+
+ECHO_MEDIATOR_CONF = {
+    'urn': 'urn:mediator:echo_test',
+    'version': '0.0.1',
+    'name': 'Echo Mediator',
+    'description': 'Echos posted input',
+    'defaultChannelConfig': [
+        {
+            'name': 'Echo Mediator',
+            'urlPattern': '^/echo$',
+            'alerts': [],
+            'txRerunAcl': [],
+            'txViewFullAcl': [],
+            'txViewAcl': [],
+            'properties': [],
+            'matchContentTypes': [],
+            'routes': [
+                {
+                    'name': 'Echo mediator route',
+                    'host': 'him-mediators.globalhealthapp.net',
+                    'port': '443',
+                    'primary': True,
+                    'type': 'http',
+                }
+            ],
+            'allow': ['admin'],
+            'methods': ['GET', 'POST'],
+            'type': 'http',
+        }
+    ],
+    'endpoints': [
+        {
+            'name': 'Echo mediator route',
+            'host': 'him-mediators.globalhealthapp.net',
+            'path': '/echo/',
+            'port': '443',
+            'primary': True,
+            'type': 'http',
+        }
+    ]
+}
+
+DREAMS_INTERVENTION_MEDIATOR_CONF = {
+    'urn': 'urn:mediator:dream-odk-intervention',
+    'version': '0.0.1',
+    'name': 'DREAMS ODK Intervention Mediator',
+    'description': 'Converts ODK json into DREAMS API json',
+    'defaultChannelConfig': [
+        {
+            'name': 'DREAMS Interventions Mediator',
+            'urlPattern': '^/dreams-odk-intervention$',
+            'alerts': [],
+            'txRerunAcl': [],
+            'txViewFullAcl': [],
+            'txViewAcl': [],
+            'properties': [],
+            'matchContentTypes': [],
+            'routes': [
+                {
+                    'name': 'DREAMS ODK mediator route',
+                    'host': 'him-mediators.globalhealthapp.net',
+                    'port': '443',
+                    'primary': True,
+                    'type': 'http',
+                }
+            ],
+            'allow': ['admin', 'dreams-app'],
+            'methods': ['GET', 'POST'],
+            'type': 'http',
+        }
+    ],
+    'endpoints': [
+        {
+            'name': 'DREAMS ODK mediator route',
+            'host': 'him-mediators.globalhealthapp.net',
+            'path': '/dreams-odk-intervention/',
+            'port': '443',
+            'primary': True,
+            'type': 'http',
+        }
+    ]
+}
+
+DREAMS_INTERVENTION_API_ENDPOINT_CONF = {
+    'api_user_name': 'api_user',
+    'api_password': 'ap1#Us3r',
+    'api_end_point': 'https://dreams-dev.globalhealthapp.net/api/v1/interventions/'
+}
 
 # Application definition
 
@@ -37,6 +140,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'mediators',
 ]
 
@@ -124,4 +228,4 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-STATIC_ROOT = '/var/www/him-mediators.globalhealthapp.net'
+STATIC_ROOT = '/var/www/127.0.0.1'
